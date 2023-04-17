@@ -79,76 +79,12 @@ def nat_pow (G : Group α) : α → ℕ → α
 def neg_pow (G : Group α) : α → ℕ → α :=
   fun a n => nat_pow G (G.inv a) n
 
-/-
-def pow (G : Group α) (a : α) (n : Int) : α :=
-  match n with
-  | Int.ofNat n' => nat_pow G a n'
-  | Int.negSucc n' => nat_pow G (G.inv a) (Nat.succ n')
--/
-
 /- A group is abelian if its operation is commutative. -/
 def abelian {α : Type} (G : Group α) : Prop := 
   ∀ a b : α, G.op a b = G.op b a
 
 
 
------ Properties of Powers -----
-/-
-/- a^{-n} = (a^n)^{-1} -/
--- requires induction on the associative property I think
--- also requires an inductive version of the definition neg_pow
-/-
-theorem inv_power_eq_power_inv (G : Group α) (a : α) (n : Int) :
-    pow G a (Int.neg n) = G.inv (pow G a n) := by
-  match n with
-  | Int.ofNat n' =>
-      simp [pow]
-      induction n' with
-      | zero => 
-          apply Eq.symm
-          apply inverse_identity
-      | succ n' ih =>
-          apply unique_inverse
-          apply And.intro
-          { simp [nat_pow]
-             }
-          {  }
-  | Int.negSucc n' => sorry
--/
-#check Nat.add
-theorem add_powers (G : Group α) (a : α) (n m : ℕ) :
-    Group.op (nat_pow G a n) (nat_pow G a m) = nat_pow G a (Nat.add n m) := by
-  induction m with
-  | zero =>
-      simp [nat_pow]
-  | succ m' ih =>
-      simp [nat_pow]
-      simp [Nat.add] at ih
-      rw [←ih]
-      simp [G.op_assoc]
-      
-theorem power_minus_one (G : Group α) (a : α) (n : ℕ) :
-    Group.op (nat_pow G a n) (G.inv a ) = nat_pow G a (n - 1) := sorry
-
-theorem inv_power_eq_power_inv (G : Group α) (a : α) (n : ℕ) : 
-    neg_pow G a n = G.inv (nat_pow G a n) := by
-  induction n with
-  | zero => 
-      simp [nat_pow, neg_pow]
-      apply Eq.symm
-      apply inverse_identity
-  | succ n' ih => 
-      apply unique_inverse
-      apply And.intro
-      { simp [nat_pow, neg_pow]
-        simp [G.op_assoc]
-        simp [neg_pow] at ih
-        simp [ih] }
-      { sorry }
-
--------------------------------------------------
--/
-    
 ----- Properties of Group Homomorphisms -----
 
 structure Homomorphism {α β : Type} (G : Group α) (H : Group β) where
@@ -370,10 +306,3 @@ theorem preserves_abelian {α β : Type} (G : Group α) (H : Group β) (h : G �
       simp [φ.hom]
       apply h₁
     apply φ.inj h₂ }
-
-/-
-def cyclic {α : Type} (G : Group α) : Prop :=
-  ∃ g : α, ∀ a : α, ∃ n : ℕ, a = pow G g n
--/
-
-/- isomorphism preserves cyclic property -/
