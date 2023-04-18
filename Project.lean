@@ -21,11 +21,11 @@ theorem nonempty_group (G : Group α) : Nonempty α := by
   apply Nonempty.intro G.e
 
 /- The identity element of a group is unique. -/
-theorem unique_identity (G : Group α) (e₂ : α) : 
-    (∀ a : α, G.op e₂ a = a ∧ G.op a e₂ = a) → e₂ = G.e := by
+theorem unique_identity (G : Group α) (e' : α) : 
+    (∀ a : α, G.op e' a = a ∧ G.op a e' = a) → e' = G.e := by
   intro h₁
-  have h₂ : G.op G.e e₂ = e₂ := by apply G.e_op
-  have h₃ : G.op G.e e₂ = G.e := by exact And.right (h₁ G.e)
+  have h₂ : G.op G.e e' = e' := by apply G.e_op
+  have h₃ : G.op G.e e' = G.e := by exact And.right (h₁ G.e)
   rw [h₂] at h₃
   exact h₃
 
