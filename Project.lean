@@ -205,10 +205,10 @@ structure Isomorphism {α β : Type} (G : Group α) (H : Group β) extends
   sur : Function.Surjective f
 
 /- G is isomorphic to H if there exists some isomorphism from G to H. -/
-def Isomorphic (G : Group α) (H : Group β) : Prop :=
+def isomorphic (G : Group α) (H : Group β) : Prop :=
   Nonempty (Isomorphism G H)
 
-infixl:60 " ≅ " => Isomorphic
+infixl:60 " ≅ " => isomorphic
 
 /- 
 · Every group is isomorphic to itself.
