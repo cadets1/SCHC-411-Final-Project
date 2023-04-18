@@ -1,1 +1,1 @@
-Proving some basic basic properties of groups, group homomorphisms, and group isomorphisms in Lean.
+Proving some basic properties of groups, group homomorphisms, and group isomorphisms in Lean.
