@@ -83,6 +83,9 @@ def neg_pow (G : Group α) : α → ℕ → α :=
 def abelian {α : Type} (G : Group α) : Prop := 
   ∀ a b : α, G.op a b = G.op b a
 
+def cyclic {α : Type} (G : Group α) : Prop :=
+  ∃ g : α, ∀ a : α, (∃ n, a = nat_pow G g n) ∨ (∃ m, a = neg_pow G g m)
+
 
 
 ----- Properties of Group Homomorphisms -----
@@ -127,7 +130,7 @@ theorem preserves_inverse (G : Group α) (a : α) (h : Homomorphism G H) :
     apply Eq.trans h₁ h₂ }
 
 /- A homomorphism φ satisfies φ(a^n) = (φ(a))^n. -/
-theorem preserves_power (G : Group α) (a : α) (n : ℕ) (h : Homomorphism G H) : 
+theorem preserves_nat_power (G : Group α) (a : α) (n : ℕ) (h : Homomorphism G H) : 
     h.f (nat_pow G a n) = nat_pow H (h.f a) n := by
   induction n with
   | zero =>
@@ -141,7 +144,7 @@ theorem preserves_neg_power (G : Group α) (a : α) (n : ℕ) (h : Homomorphism 
     h.f (neg_pow G a n) = neg_pow H (h.f a) n := by
   simp [neg_pow]
   rw [←preserves_inverse]
-  apply preserves_power
+  apply preserves_nat_power
 
 /- A homomorphism φ is injective if and only if Ker φ = {e}. -/
 theorem injective_kernel (G : Group α) (h : Homomorphism G H) :
@@ -306,3 +309,51 @@ theorem preserves_abelian {α β : Type} (G : Group α) (H : Group β) (h : G �
       simp [φ.hom]
       apply h₁
     apply φ.inj h₂ }
+
+/- The cyclic property of groups is preserved under isomorphism. -/
+theorem preserves_cyclic {α β : Type} (G : Group α) (H : Group β) (h : G ≅ H) :
+    cyclic G ↔ cyclic H := by
+  have φ : Isomorphism G H := by apply Classical.choice h
+  apply Iff.intro
+  { intro h₁
+    let ⟨g, hg⟩ := Classical.indefiniteDescription 
+      (fun x => ∀ a : α, (∃ n, a = nat_pow G x n) ∨ (∃ m, a = neg_pow G x m)) h₁
+    apply Exists.intro (φ.f g)
+    intro b
+    have h₂ : ∃ a, φ.f a = b := by apply φ.sur
+    let ⟨a, ha⟩ := Classical.indefiniteDescription (fun x => φ.f x = b) h₂
+    cases hg a with
+    | inl h₃ =>
+        let ⟨n, hn⟩ := Classical.indefiniteDescription (fun x => a = nat_pow G g x) h₃
+        apply Or.inl
+        apply Exists.intro n
+        rw [←preserves_nat_power]
+        rw [←hn, ←ha]
+    | inr h₄ =>
+        let ⟨m, hm⟩ := Classical.indefiniteDescription (fun x => a = neg_pow G g x) h₄
+        apply Or.inr
+        apply Exists.intro m
+        rw [←preserves_neg_power]
+        rw [←hm, ←ha] }
+  { intro h₁
+    let ⟨k, hk⟩ := Classical.indefiniteDescription
+      (fun x => ∀ b : β, (∃ n, b = nat_pow H x n) ∨ (∃ m, b = neg_pow H x m)) h₁
+    have h₂ : ∃ g, φ.f g = k := by apply φ.sur
+    let ⟨g, hg⟩ := Classical.indefiniteDescription (fun x => φ.f x = k) h₂
+    apply Exists.intro g
+    intro a
+    cases hk (φ.f a) with
+    | inl h₃ => 
+        let ⟨n, hn⟩ := Classical.indefiniteDescription (fun x => φ.f a = nat_pow H k x) h₃
+        apply Or.inl
+        apply Exists.intro n
+        apply φ.inj
+        rw [preserves_nat_power]
+        rw [hg, hn]
+    | inr h₄ =>
+        let ⟨m, hm⟩ := Classical.indefiniteDescription (fun x => φ.f a = neg_pow H k x) h₄
+        apply Or.inr
+        apply Exists.intro m
+        apply φ.inj
+        rw [preserves_neg_power]
+        rw [hg, hm] }
