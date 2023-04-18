@@ -83,6 +83,8 @@ def neg_pow (G : Group α) : α → ℕ → α :=
 def abelian {α : Type} (G : Group α) : Prop := 
   ∀ a b : α, G.op a b = G.op b a
 
+/- A group is cyclic if there is a generator g such that 
+   every element of the group can be written as a power of g. -/
 def cyclic {α : Type} (G : Group α) : Prop :=
   ∃ g : α, ∀ a : α, (∃ n, a = nat_pow G g n) ∨ (∃ m, a = neg_pow G g m)
 
